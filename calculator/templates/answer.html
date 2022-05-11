@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        h1{
+            text-align: center;
+            color: darkred;
+            font-size: 50px;
+        }
+        h2{
+            text-align: center;
+            color: aliceblue;
+            font-size: 20px;
+        }
+        button{
+            position: absolute;
+            background-color: transparent;
+            color: aliceblue;
+            border-radius: 12px;
+            border-color: transparent;
+            transition-duration: .2s;
+            cursor: pointer;
+            font-size: 40px;
+        }
+        button:hover {
+          font-size: 50px;
+          background-color: transparent; /* Green */
+          color: rgb(160, 0, 0);
+        }
+        input{
+            width: 25%;
+            height: 25%;
+            background-color: transparent;
+            border-color: darkred;
+            color: darkred;
+        }
+        body{
+            background-color: black;
+        }
+    </style>
+</head>
+
+<body>
+    
+    <form action="/" method="get">
+        <h1 style="position: fixed; top: 200px; font-size: 270px; color: aliceblue;">{{z}}</h1>
+        <button style="left: 750px;" > Back To Calculator</button>
+    </form>
+</body>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        h1{
+            text-align: center;
+            color: darkred;
+            font-size: 50px;
+        }
+        h2{
+            text-align: center;
+            color: aliceblue;
+            font-size: 20px;
+        }
+        button{
+            position: absolute;
+            background-color: transparent;
+            color: aliceblue;
+            border-radius: 12px;
+            border-color: transparent;
+            transition-duration: .2s;
+            cursor: pointer;
+            font-size: 40px;
+        }
+        button:hover {
+          font-size: 50px;
+          background-color: transparent; /* Green */
+          color: rgb(160, 0, 0);
+        }
+        input{
+            width: 25%;
+            height: 25%;
+            background-color: transparent;
+            border-color: white;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            color: darkred;
+        }
+        body{
+            background-color: black;
+        }
+        input{
+            position: absolute;
+            font-size: 50px;
+        }
+        select{
+            position: absolute;
+            font-size: 50px;
+            background-color: transparent;
+            color: darkred;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+        }
+        select:hover{
+            color: darkgrey;
+            font-size: 55px;
+            transition-duration: .2s;
+        }
+    </style>
+</head>
+<body>
+    <form action="/" method="post">
+    <h1>KODER</h1>
+    <h2>Calculator</h2>
+    <h2>**Temporarily whole numbers only</h2>
+    <input style="left: 200px; top: 200px" name="x" id="x" placeholder="number" type="number" step="any">
+    <select style="left: 930px; top: 300px;" name="q" id="q">
+        <option value="+">+</option>
+        <option value="-">-</option>
+        <option value="x">x</option>
+        <option value="/">/</option>
+        <option value="^">^</option>
+      </select>
+    <input style="right: 200px; top: 200px " name="y" id="y" placeholder="number" type="number" step="any">
+    <button style="left: 860px; top: 480px" type="submit" value="Submit">Calculate</button>
+</form>
+</body>
+</html>
