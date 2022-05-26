@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTH_Attendance</title>
+    <style>
+        body {
+            overflow: hidden; /* Hide scrollbars */
+        }
+        .background{
+            width: 50%;
+            background-image: url({{ url_for('static', filename='tt_image.jpg') }});
+            
+        }
+        .header{
+            text-align: left;
+            font-size: 50px;
+            font-weight: bold;
+            font-family: monospace;
+            color: white;
+            position: fixed;
+        }
+        .h2{
+            text-align: center;
+            position: absolute;
+            border-radius: 25px;
+            border-style: double;
+            border-width: 10px;
+            border-color: rgb(230, 230, 230);
+            width: 800px;
+            background-color: rgb(255, 163, 42);
+            color: beige;
+            left: 270px;
+            top: 200px;
+            font-size:90px;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        }
+        .div1{
+            height: 750px;
+            width: 99%;
+            left: 0px;
+            border-width: 10px;
+            border-radius: 20px;
+            border-style: double;
+            border-color: rgb(255, 255, 255);
+            background-repeat: no-repeat;
+            background-size: 100%;
+            background-image: url({{ url_for('static', filename='tt_image2.jpg') }});
+        }
+        html {
+          scroll-behavior: smooth;
+        }
+        .section2 {
+            height: 750px;
+            width: 99%;
+            border-style: double;
+            border-width: 10px;
+            border-radius: 20px;
+            border-color: rgb(255, 255, 255);
+            background-repeat: no-repeat;
+            background-size: 100%;
+            background-image: url({{ url_for('static', filename='doggypic.jpg') }});
+        }
+        .img{
+            position: absolute;
+            left: 500px;
+            top: 40px;
+        }
+    </style>
+</head>
+<body id="body" style="background-color: black">
+    <form action="/" method="GET">
+
+    <div class="div1" id="main">
+        <h2 class="h2">Attendance: {{i}}</h2>
+        <!-- <a id="button" href="#section" style="font-size: 30px;">To Section2</a> -->
+        <image class="img" height="25%" width="25%" src="{{url_for('static',filename = 'tt_logo2.jpg')}}" style="z-index: 650px">
+    </div>
+    <div class="section2" id="section">
+        <!-- <a href="#main" style="font-size: 30px;">Back to Top</a> -->
+    </div>
+    {% for ting in x %}
+        <p style="color: white;">{{ting}}</p>
+    {% endfor %}
+    </form>
+</body>
+<script>
+    sec1 = document.getElementById("main")
+    sec2 = document.getElementById("section")
+    body = document.getElementById("body")
+    button = document.getElementById("button")
+
+    body.addEventListener("load", setInterval(scroll, 5000))
+
+    function scroll(){
+        window.scrollTo(0, 780);
+        window.scrollTo(0,10);
+    }
+
+
+</script>
+</html>
