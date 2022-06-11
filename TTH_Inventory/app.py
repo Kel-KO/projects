@@ -33,8 +33,8 @@ def admissions():
         # display admissions page
         return render_template("ad.html")
 
-@app.route("/foodandbev",  methods=["GET", "POST"])
+@app.route("/foodandbevadmin",  methods=["GET", "POST"])
 def foodandbev():
     if request.method == "GET":
         # display food and bev page
-        return render_template("fb.html")
+        return render_template("fbadmin.html")
