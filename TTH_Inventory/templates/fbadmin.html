@@ -124,6 +124,54 @@
           border-radius: 10px;
           border-style: dotted;
         }
+        .drop{
+            background-color: transparent;
+            border-bottom: black;
+            border-top: transparent;
+            border-left: transparent;
+            border-right: transparent;
+            font-size: 25px;
+            position: absolute;
+        }
+        .drop:hover{
+            color: red;
+            font-size: 27px;
+            transition-duration: .2s;
+        }
+        .amnt{
+            background-color: transparent;
+            border-bottom: black;
+            border-top: transparent;
+            border-left: transparent;
+            border-right: transparent;
+            font-size: 25px;
+            position: absolute;
+            width: 10%;
+        }
+        .note{
+            background-color: transparent;
+            border-bottom: black;
+            border-top: transparent;
+            border-left: transparent;
+            border-right: transparent;
+            font-size: 25px;
+            position: absolute;
+            width: 20%;
+        }
+        .sbmt{
+            background-color: transparent;
+            border-bottom: black;
+            border-top: transparent;
+            border-left: transparent;
+            border-right: transparent;
+            font-size: 25px;
+            position: absolute;
+        }
+        .sbmt:hover{
+            color: red;
+            font-size: 27px;
+            transition-duration: .2s;
+        }
     </style>
 </head>
 <body>
@@ -135,6 +183,25 @@
     <h1 style="color: black;">Last Updated 00:00:00:00 d/m</h1>
     <div>
         <h1 style="color: black; position: absolute; top: 300px;">Last Updated 00:00:00:00 d/m</h1>
+        <select class="drop" name= "item" id="item" style="left: 40%; top:400px" >
+            <option value="buns">buns</option>
+            <option value="patties">patties</option>
+            <option value="silverware">silverware</option>
+            <option value="chips">chips</option>
+            <option value="cookies">cookies</option>
+        </select>
+        <input class="amnt" style="left: 50%; top: 400px; " name="quantity" id="quantity" placeholder="quantity" type="number" step="any">
+        <select class="drop" name="location" id="location" style="left: 60%; top:400px" >
+            <option value="buns">RiverGrill</option>
+            <option value="patties">Smokehouse</option>
+            <option value="silverware">Ray's Pizza</option>
+            <option value="chips">JP Dogs</option>
+            <option value="cookies">Pretzel</option>
+            <option value="chips">DippinDots</option>
+            <option value="cookies">BahamaBucks</option>
+        </select>
+        <input class="note" style="left: 75%; top: 400px; " name="note" id="note" placeholder="note">
+        <button class="sbmt" type="submit" style="left: 30%; top: 400px;">Confirm</button>
         <table style="width:100%">
             <thead>
                 <tr>
