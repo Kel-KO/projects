@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTH</title>
+
+
+    <style>
+        body{
+            background-color: rgb(255, 255, 255);
+        }
+        .header{
+            width: 100%;
+            height: 90px;
+            position: fixed;
+            text-align: left;
+            font-size: 20px;
+            /* color: rgb(255, 255, 255); */
+            font-family: Arial, Helvetica, sans-serif;
+            background-size: cover;
+            background-position: center;
+            background-repeat: none;
+            background-image: url({{ url_for('static', filename='liltth4.png') }});
+            
+        }
+        .headertxt{
+            position: absolute;
+            width: 100%;
+            top: 0px;
+            left: 170px;
+            color: rgb(255, 255, 255);
+        }
+        .img{
+            position: absolute;
+            left: 10px;
+            top: 10px;
+        }
+        .b1{
+            font-size: 30px;
+            color: rgb(255, 255, 255);
+            position: absolute;
+            top: 30px;
+            left: 400px;
+            background-color: transparent;
+            border: none; 
+            transition-duration: .2s;   
+        }
+        .b1:hover{
+            color: black;
+            font-size: 35px;
+            font-weight: bolder;
+            text-decoration: underline;
+        }
+        .b2{
+            font-size: 30px;
+            color: rgb(255, 255, 255);
+            position: absolute;
+            top: 30px;
+            left: 630px;
+            background-color: transparent;
+            border: none;
+            transition-duration: .2s;
+        }
+        .b2:hover{
+            color: black;
+            font-size: 35px;
+            font-weight: bolder;
+            text-decoration: underline;
+        }
+        .b3{
+            font-size: 30px;
+            color: rgb(255, 255, 255);
+            position: absolute;
+            top: 30px;
+            left: 730px;
+            background-color: transparent;
+            border: none;
+            transition-duration: .2s;
+        }
+        .b3:hover{
+            color: black;
+            font-size: 35px;
+            font-weight: bolder;
+            text-decoration: underline;
+        }
+        .b4{
+            font-size: 30px;
+            color: rgb(255, 255, 255);
+            position: absolute;
+            top: 30px;
+            left: 950px;
+            background-color: transparent;
+            border: none;
+            transition-duration: .2s;
+        }
+        .b4:hover{
+            color: black;
+            font-size: 35px;
+            font-weight: bolder;
+            text-decoration: underline;
+        }
+        .admn{
+            position: absolute;
+            left: 40%;
+            top: 250px;
+            border: none;
+            color: black;
+            font-size: 30px;
+            width: 30%;
+        }
+        .sbmt{
+            background-color: transparent;
+            border-bottom: black;
+            border-top: transparent;
+            border-left: transparent;
+            border-right: transparent;
+            font-size: 25px;
+            position: absolute;
+        }
+        .sbmt:hover{
+            color: red;
+            font-size: 27px;
+            transition-duration: .2s;
+        }
+        .p{
+            font-size: 10px;
+            position: absolute;
+            top: 100px;
+            left: 100px;
+        }
+    </style>
+</head>
+<body>
+    <!-- <form action="/" method="post"> -->
+    <div class="header">
+        <image class="img" height="80%" width="12%" src="{{url_for('static',filename = 'tt_logo2.jpg')}}" style="z-index: 650px">
+        <h1 class="headertxt" id="admn" name="admn">Inventory</h1>
+        <p class="p">(user)</p>
+        <button onclick="window.location='http://127.0.0.1:7000/foodandbev';" id="fb" class="b1">Food & Bev</button>
+        <button onclick="window.location='http://127.0.0.1:7000/it';" id="it" class="b2">IT</button>
+        <button onclick="window.location='http://127.0.0.1:7000/admissions';" id="ad" class="b3">Admissions</button>
+        <button onclick="window.location='http://127.0.0.1:7000/retail';" id="rt" class="b4">Retail</button>
+    </div>
+    <!-- </form>    -->
+</body>
+<script>
+    fb = document.getElementById("fb")
+    it = document.getElementById("it")
+    ad = document.getElementById("ad")
+    rt = document.getElementById("rt")
+</script>
+</html>
