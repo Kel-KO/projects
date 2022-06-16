@@ -172,20 +172,40 @@
             font-size: 27px;
             transition-duration: .2s;
         }
-        
     </style>
 </head>
 <body>
-
+    <!-- <form action="/foodandbev" method="get"> -->
     <div class="header">
         <image class="img" height="80%" width="12%" src="{{url_for('static',filename = 'tt_logo2.jpg')}}" style="z-index: 650px">
         <h1 class="headertxt">Food & Bev</h1>
-        <button onclick="window.location='http://127.0.0.1:5000/';" class="b2">Back To Main</button>
+        <button onclick="window.location='http://127.0.0.1:7000/';" class="b2">Back To Main</button>
     </div>
     <h1 style="color: black;">Last Updated 00:00:00:00 d/m</h1>
-    <button class="sbmt" style="left: 60%; top: 400px;"> Switch to Admin Mode</button>
     <div>
+    <!-- </form>  -->
+    <!-- <form action="/foodandbev" method="post">    -->
         <h1 style="color: black; position: absolute; top: 300px;">Last Updated 00:00:00:00 d/m</h1>
+        <p style="color: black; position: absolute; top: 350px;">please fill in every input </p>
+        <select class="drop" name= "item" id="item" style="left: 40%; top:400px" >
+            <option value="buns">buns</option>
+            <option value="patties">patties</option>
+            <option value="silverware">silverware</option>
+            <option value="chips">chips</option>
+            <option value="cookies">cookies</option>
+        </select>
+        <input class="amnt" style="left: 50%; top: 400px; " name="quantity" id="quantity" placeholder="quantity" type="number" step="any">
+        <select class="drop" name="location" id="location" style="left: 60%; top:400px" >
+            <option value="buns">RiverGrill</option>
+            <option value="patties">Smokehouse</option>
+            <option value="silverware">Ray's Pizza</option>
+            <option value="chips">JP's Dogs</option>
+            <option value="cookies">Pretzel</option>
+            <option value="chips">DippinDots</option>
+            <option value="cookies">BahamaBucks</option>
+        </select>
+        <input class="note" style="left: 75%; top: 400px; " name="note" id="note" placeholder="note">
+        <button class="sbmt" type="submit" style="left: 30%; top: 400px;">Confirm</button>
         <table style="width:100%">
             <thead>
                 <tr>
@@ -207,6 +227,6 @@
             </tbody>  
         </table>
     </div>
-    
+    <!-- </form> -->
 </body>
 </html>
