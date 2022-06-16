@@ -127,19 +127,16 @@
     </style>
 </head>
 <body>
-    <!-- <form action="/" method="post"> -->
+    
     <div class="header">
         <image class="img" height="80%" width="12%" src="{{url_for('static',filename = 'tt_logo2.jpg')}}" style="z-index: 650px">
-        <h1 class="headertxt">Inventory</h1>
-        <button onclick="window.location='http://127.0.0.1:5000/foodandbev';" id="fb" class="b1">Food & Bev</button>
-        <button onclick="window.location='http://127.0.0.1:5000/it';" id="it" class="b2">IT</button>
-        <button onclick="window.location='http://127.0.0.1:5000/admissions';" id="ad" class="b3">Admissions</button>
-        <button onclick="window.location='http://127.0.0.1:5000/retail';" id="rt" class="b4">Retail</button>
+        <h1 class="headertxt" id="admn" name="admn">Inventory</h1>
     </div>
-    <input id="pass" name="pass" type="password" class="admn" placeholder="Enter Passphrase">
-    <button type="submit" class="sbmt" style="left: 40%; top: 300px;">Access</button>
-    <h1 style="position:absolute; left: 40%; top:450px; font-size: 15px">Enter passphrase to access admin mode</h1>
-    <!-- </form>    -->
+    
+    <form action="/" method="post">
+        <input id="pass" name="pass" type="password" class="admn" placeholder="Enter Passphrase">
+        <button onclick="window.location='http://127.0.0.1:7000/';" type="submit" class="sbmt" style="left: 40%; top: 300px;">Access</button>
+    </form>   
 </body>
 <script>
     fb = document.getElementById("fb")
