@@ -108,15 +108,124 @@
             font-weight: bolder;
             text-decoration: underline;
         }
+        table{
+            position: absolute;
+            top: 500px;
+            border-radius: 10px;
+            border-color: black;
+        }
+        th{
+          border-color: #96D4D4;
+          border-radius: 10px;
+          border-style: double;
+        }
+        td{
+          border-color: #ff0000;
+          border-radius: 10px;
+          border-style: dotted;
+        }
+        .drop{
+            background-color: transparent;
+            border-bottom: black;
+            border-top: transparent;
+            border-left: transparent;
+            border-right: transparent;
+            font-size: 25px;
+            position: absolute;
+        }
+        .drop:hover{
+            color: red;
+            font-size: 27px;
+            transition-duration: .2s;
+        }
+        .amnt{
+            background-color: transparent;
+            border-bottom: black;
+            border-top: transparent;
+            border-left: transparent;
+            border-right: transparent;
+            font-size: 25px;
+            position: absolute;
+            width: 10%;
+        }
+        .note{
+            background-color: transparent;
+            border-bottom: black;
+            border-top: transparent;
+            border-left: transparent;
+            border-right: transparent;
+            font-size: 25px;
+            position: absolute;
+            width: 20%;
+        }
+        .sbmt{
+            background-color: transparent;
+            border-bottom: black;
+            border-top: transparent;
+            border-left: transparent;
+            border-right: transparent;
+            font-size: 25px;
+            position: absolute;
+        }
+        .sbmt:hover{
+            color: red;
+            font-size: 27px;
+            transition-duration: .2s;
+        }
     </style>
 </head>
 <body>
+    <!-- <form action="/foodandbev" method="get"> -->
     <div class="header">
         <image class="img" height="80%" width="12%" src="{{url_for('static',filename = 'tt_logo2.jpg')}}" style="z-index: 650px">
-        <h1 class="headertxt">Inventory</h1>
-        <button onclick="window.location='http://127.0.0.1:5000/';" class="b2">Back To Main</button>
+        <h1 class="headertxt">Admissions</h1>
+        <button onclick="window.location='http://127.0.0.1:7000/';" class="b2">Back To Main</button>
     </div>
-    <h1 class="h1">Admissions</h1>
-
+    <h1 style="color: black;">Last Updated 00:00:00:00 d/m</h1>
+    <div>
+    <!-- </form>  -->
+    <!-- <form action="/foodandbev" method="post">    -->
+        <h1 style="color: black; position: absolute; top: 300px;">Last Updated 00:00:00:00 d/m</h1>
+        <select class="drop" name= "item" id="item" style="left: 40%; top:400px" >
+            <option value="buns">buns</option>
+            <option value="patties">patties</option>
+            <option value="silverware">silverware</option>
+            <option value="chips">chips</option>
+            <option value="cookies">cookies</option>
+        </select>
+        <input class="amnt" style="left: 50%; top: 400px; " name="quantity" id="quantity" placeholder="quantity" type="number" step="any">
+        <select class="drop" name="location" id="location" style="left: 60%; top:400px" >
+            <option value="buns">RiverGrill</option>
+            <option value="patties">Smokehouse</option>
+            <option value="silverware">Ray's Pizza</option>
+            <option value="chips">JP Dogs</option>
+            <option value="cookies">Pretzel</option>
+            <option value="chips">DippinDots</option>
+            <option value="cookies">BahamaBucks</option>
+        </select>
+        <input class="note" style="left: 75%; top: 400px; " name="note" id="note" placeholder="note">
+        <button class="sbmt" type="submit" style="left: 30%; top: 400px;">Confirm</button>
+        <table style="width:100%">
+            <thead>
+                <tr>
+                  <th scope="col">ID</th>
+                  <th scope="col">ITEM</th>
+                  <th scope="col">QUANTITY</th>
+                  <th scope="col">LOCATION</th>
+                  <th scope="col">NOTE</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td scope="col">1</th>
+                    <td scope="col">buns</th>
+                    <td scope="col">734</th>
+                    <td scope="col">Rivergrill</th>
+                    <td scope="col">all still fresh and ready</th>
+                  </tr>
+            </tbody>  
+        </table>
+    </div>
+    <!-- </form> -->
 </body>
 </html>
