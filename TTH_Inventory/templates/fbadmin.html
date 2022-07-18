@@ -1,234 +1,126 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TTH INVENTORY</title>
+import os
+import sqlite3
+from flask import Flask, flash, redirect, render_template, request, url_for
+from tempfile import mkdtemp
+
+# Configure application
+app = Flask(__name__)
+
+#cnx = MySQLConnection(user='naijaboyz123', database='KKOdb')
+#db = cnx.cursor(raw=True, buffered=True)
+
+def admin():
+    #require passphrase to acces admin or user mode
+    x = 0
+    if (request.form.get("pass")) == "Typh00n2022":
+        x = 1
+    elif (request.form.get("pass")) == "Howdy123!":
+        x = 2
+    return x
+
+@app.route("/",  methods=["GET", "POST"])
+def index():
+    if request.method == "GET":
+        # display basic index page
+        return render_template("index.html")
+    else:
+        if admin() == 1:
+            #display index page admin version
+            return render_template("indexadmin.html")
+        elif admin() == 2:
+            #display index page regular user version
+            return render_template("indexuser.html")
+        else:
+            #if passphrase doesn't match either options redisplay basic index page
+            return render_template("index.html") 
 
 
-    <style>
-        body{
-            background-color: rgb(255, 255, 255);
-        }
-        .header{
-            width: 100%;
-            height: 90px;
-            position: fixed;
-            text-align: left;
-            font-size: 20px;
-            /* color: rgb(255, 255, 255); */
-            font-family: Arial, Helvetica, sans-serif;
-            background-size: cover;
-            background-position: center;
-            background-repeat: none;
-            background-image: url({{ url_for('static', filename='liltth4.png') }});
-            
-        }
-        .headertxt{
-            position: absolute;
-            width: 100%;
-            top: 0px;
-            left: 170px;
-            color: rgb(255, 255, 255);
-        }
-        .h1{
-            color: black;
-            text-align: center;
-            position: absolute;
-            left: 50%;
-            top: 100px;
-        }
-        .img{
-            position: absolute;
-            left: 10px;
-            top: 10px;
-        }
-        .b1{
-            font-size: 30px;
-            color: rgb(255, 255, 255);
-            position: absolute;
-            top: 30px;
-            left: 400px;
-            background-color: transparent;
-            border: none; 
-            transition-duration: .2s;   
-        }
-        .b1:hover{
-            color: black;
-            font-size: 35px;
-            font-weight: bolder;
-            text-decoration: underline;
-        }
-        .b2{
-            font-size: 30px;
-            color: rgb(255, 255, 255);
-            position: absolute;
-            top: 30px;
-            left: 630px;
-            background-color: transparent;
-            border: none;
-            transition-duration: .2s;
-        }
-        .b2:hover{
-            color: black;
-            font-size: 35px;
-            font-weight: bolder;
-            text-decoration: underline;
-        }
-        .b3{
-            font-size: 30px;
-            color: rgb(255, 255, 255);
-            position: absolute;
-            top: 30px;
-            left: 730px;
-            background-color: transparent;
-            border: none;
-            transition-duration: .2s;
-        }
-        .b3:hover{
-            color: black;
-            font-size: 35px;
-            font-weight: bolder;
-            text-decoration: underline;
-        }
-        .b4{
-            font-size: 30px;
-            color: rgb(255, 255, 255);
-            position: absolute;
-            top: 30px;
-            left: 950px;
-            background-color: transparent;
-            border: none;
-            transition-duration: .2s;
-        }
-        .b4:hover{
-            color: black;
-            font-size: 35px;
-            font-weight: bolder;
-            text-decoration: underline;
-        }
-        table{
-            position: absolute;
-            top: 500px;
-            border-radius: 10px;
-            border-color: black;
-        }
-        th{
-          border-color: #96D4D4;
-          border-radius: 10px;
-          border-style: double;
-        }
-        td{
-          border-color: #ff0000;
-          border-radius: 10px;
-          border-style: dotted;
-        }
-        .drop{
-            background-color: transparent;
-            border-bottom: black;
-            border-top: transparent;
-            border-left: transparent;
-            border-right: transparent;
-            font-size: 25px;
-            position: absolute;
-        }
-        .drop:hover{
-            color: red;
-            font-size: 27px;
-            transition-duration: .2s;
-        }
-        .amnt{
-            background-color: transparent;
-            border-bottom: black;
-            border-top: transparent;
-            border-left: transparent;
-            border-right: transparent;
-            font-size: 25px;
-            position: absolute;
-            width: 10%;
-        }
-        .note{
-            background-color: transparent;
-            border-bottom: black;
-            border-top: transparent;
-            border-left: transparent;
-            border-right: transparent;
-            font-size: 25px;
-            position: absolute;
-            width: 20%;
-        }
-        .sbmt{
-            background-color: transparent;
-            border-bottom: black;
-            border-top: transparent;
-            border-left: transparent;
-            border-right: transparent;
-            font-size: 25px;
-            position: absolute;
-        }
-        .sbmt:hover{
-            color: red;
-            font-size: 27px;
-            transition-duration: .2s;
-        }
-    </style>
-</head>
-<body>
-    <!-- <form action="/foodandbev" method="get"> -->
-    <div class="header">
-        <image class="img" height="80%" width="12%" src="{{url_for('static',filename = 'tt_logo2.jpg')}}" style="z-index: 650px">
-        <h1 class="headertxt">Food & Bev</h1>
-        <button onclick="window.location='http://127.0.0.1:7000/';" class="b2">Back To Main</button>
-    </div>
-    <h1 style="color: black;">Last Updated 00:00:00:00 d/m</h1>
-    <div>
-    <!-- </form>  -->
-    <!-- <form action="/foodandbev" method="post">    -->
-        <h1 style="color: black; position: absolute; top: 300px;">Last Updated 00:00:00:00 d/m</h1>
-        <p style="color: black; position: absolute; top: 350px;">please fill in every input </p>
-        <input class="amnt" type="text" name="additem" id="additem" placeholder="add item" style="left: 40%; top:350px">
-        <select class="drop" name= "item" id="item" style="left: 40%; top:400px" >
-            <option value="cookies">new item</option>
-            <option value="buns">buns</option>
-            <option value="patties">patties</option>
-            <option value="silverware">silverware</option>
-            <option value="chips">chips</option>
-            <option value="cookies">cookies</option>
-        </select>
-        <input class="amnt" style="left: 50%; top: 400px; " name="quantity" id="quantity" placeholder="quantity" type="number" step="any">
-        <select class="drop" name="location" id="location" style="left: 60%; top:400px" >
-            <option value="buns">RiverGrill</option>
-            <option value="patties">Smokehouse</option>
-            <option value="silverware">Ray's Pizza</option>
-            <option value="chips">JP's Dogs</option>
-            <option value="cookies">Pretzel</option>
-            <option value="chips">DippinDots</option>
-            <option value="cookies">BahamaBucks</option>
-        </select>
-        <input class="note" style="left: 75%; top: 400px; " name="note" id="note" placeholder="note">
-        <button class="sbmt" type="submit" style="left: 30%; top: 400px;">Confirm</button>
-        <table style="width:100%">
-            <thead>
-                <tr>
-                  <th scope="col">ID</th>
-                  <th scope="col">ITEM</th>
-                  <th scope="col">QUANTITY</th>
-                  <th scope="col">LOCATION</th>
-                  <th scope="col">NOTE</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td scope="col">1</th>
-                    <td scope="col">buns</th>
-                    <td scope="col">734</th>
-                    <td scope="col">Rivergrill</th>
-                    <td scope="col">all still fresh and ready</th>
-                  </tr>
-            </tbody>  
-        </table>
-    </div>
-    <!-- </form> -->
-</body>
-</html>
+
+        
+
+@app.route("/itadmin",  methods=["GET", "POST"])
+def itadmin():
+    if request.method == "GET":
+        # display IT page
+        return render_template("itadmin.html")
+
+@app.route("/it",  methods=["GET", "POST"])
+def it():
+    if request.method == "GET":
+        # display IT page
+        return render_template("it.html")
+
+
+
+
+@app.route("/retailadmin",  methods=["GET", "POST"])
+def retailadmin():
+    if request.method == "GET":
+        # display retail page
+        return render_template("rtadmin.html")
+
+@app.route("/retail",  methods=["GET", "POST"])
+def retail():
+    if request.method == "GET":
+        # display retail page
+        return render_template("rt.html")
+
+
+
+
+@app.route("/admissionsadmin",  methods=["GET", "POST"])
+def admissionsadmin():
+    if request.method == "GET":
+        # display admissions page
+        return render_template("adadmin.html")
+
+@app.route("/admissions",  methods=["GET", "POST"])
+def admissions():
+    if request.method == "GET":
+        # display admissions page
+        return render_template("ad.html")
+
+
+
+
+
+        
+
+@app.route("/foodandbevadmin",  methods=["GET", "POST"])
+def foodandbevadmin():
+    if request.method == "GET":
+        #display foodandbev page user version
+        return render_template("fbadmin.html")
+    else:
+        #update database using the user inputs
+        item = (request.form.get("item"))
+        quantity = int(request.form.get("quantity"))
+        location = (request.form.get("location"))
+        note = (request.form.get("note"))
+        new_item = (request.form.get("additem"))
+
+        #if new item is selected set the item variable to the value of "new item" to use in updating the database
+        if item == "newitem":
+            item = (request.form.get("additem"))
+ 
+        #make a check throgh the db table to see if that item already exists. If not, add it to the table along with its other information
+        # db.execute("UPDATE fbtable")
+
+        return (location)
+
+@app.route("/foodandbev",  methods=["GET", "POST"])
+def foodandbev():
+    if request.method == "GET":
+        #display foodandbev page user version
+        return render_template("fb.html")
+    else:
+        #update database using the user inputs
+        item = (request.form.get("item"))
+        quantity = int(request.form.get("quantity"))
+        location = (request.form.get("location"))
+        note = (request.form.get("note"))
+        new_item = (request.form.get("additem"))
+
+        # db.execute("UPDATE fbtable")
+
+        return render_template("fb.html" )
