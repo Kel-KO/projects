@@ -1,5 +1,5 @@
 import os
-#import mysql.connector
+import sqlite3
 from flask import Flask, flash, redirect, render_template, request, url_for
 from tempfile import mkdtemp
 
@@ -100,13 +100,13 @@ def foodandbevadmin():
         new_item = (request.form.get("additem"))
 
         #if new item is selected set the item variable to the value of "new item" to use in updating the database
-        if item == "new item":
-            item = new_item
+        if item == "newitem":
+            item = (request.form.get("additem"))
  
         #make a check throgh the db table to see if that item already exists. If not, add it to the table along with its other information
         # db.execute("UPDATE fbtable")
 
-        return render_template("fbadmin.html" )
+        return (location)
 
 @app.route("/foodandbev",  methods=["GET", "POST"])
 def foodandbev():
