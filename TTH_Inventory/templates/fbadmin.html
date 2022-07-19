@@ -172,18 +172,24 @@
             font-size: 27px;
             transition-duration: .2s;
         }
+        .p{
+            font-size: 10px;
+            position: absolute;
+            top: 100px;
+            left: 100px;
+        }
     </style>
 </head>
 <body>
-    <!-- <form action="/foodandbev" method="get"> -->
     <div class="header">
         <image class="img" height="80%" width="12%" src="{{url_for('static',filename = 'tt_logo2.jpg')}}" style="z-index: 650px">
         <h1 class="headertxt">Food & Bev</h1>
-        <button onclick="window.location='http://127.0.0.1:5000/';" class="b2">Back To Main</button>
+        <button onclick="window.location='http://127.0.0.1:7000/';" class="b2">Back To Main</button>
+        <p class="p">(admin)</p>
     </div>
     <h1 style="color: black;">Last Updated 00:00:00:00 d/m</h1>
+
     <div>
-    <!-- </form>  -->
     <form action="/foodandbevadmin" method="post">
         <h1 style="color: black; position: absolute; top: 300px;">Last Updated 00:00:00:00 d/m</h1>
         <p style="color: black; position: absolute; top: 350px;">please fill in every input </p>
@@ -208,7 +214,8 @@
         </select>
         <input class="note" style="left: 75%; top: 400px; " name="note" id="note" placeholder="note">
         <button class="sbmt" type="submit" style="left: 30%; top: 400px;">Confirm</button>
-        </form>
+
+
         <table style="width:100%">
             <thead>
                 <tr>
@@ -220,16 +227,18 @@
                 </tr>
             </thead>
             <tbody>
+                {% for item in fb %}
                 <tr>
-                    <td scope="col">1</th>
-                    <td scope="col">buns</th>
-                    <td scope="col">734</th>
-                    <td scope="col">Rivergrill</th>
-                    <td scope="col">all still fresh and ready</th>
-                  </tr>
+                    <td style="color: black;" scope="col">{{item['id']}}</td>
+                    <td style="color: black;" scope="col">{{item['item']}}</td>
+                    <td style="color: black;" scope="col">{{item['quantity']}}</td>
+                    <td style="color: black;" scope="col">{{item['location']}}</td>
+                    <td style="color: black;" scope="col">{{item['note']}}</td>
+                </tr>
+                {% endfor %}
             </tbody>  
         </table>
+    </form>
     </div>
-
 </body>
 </html>
