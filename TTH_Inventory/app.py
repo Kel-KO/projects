@@ -1,6 +1,7 @@
 import os
 import sqlite3
 from contextlib import closing
+from datetime import datetime
 
 with closing(sqlite3.connect("inv.db")) as connection:
     with closing(connection.cursor()) as cursor:
@@ -20,7 +21,19 @@ app = Flask(__name__)
 
 cursor = connection.cursor()
 #------------database test connections
-#cursor.execute("CREATE TABLE foodandbev (id INTEGER PRIMARY KEY AUTOINCREMENT, item TEXT, quantity INTEGER, location TEXT, note TEXT)")
+
+
+# -------------------------------(empty and recreate table queries)---------------------------------------
+# cursor.execute("DROP TABLE foodandbev")
+# cursor.execute("DROP TABLE it")
+# cursor.execute("CREATE TABLE foodandbev (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
+# cursor.execute("CREATE TABLE it (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
+#---------------------------------------------------------------------------------------------------------
+
+
+
+
+
 #x = 1
 #y = "hi"
 #cursor.execute("INSERT INTO foodandbev VALUES (?,?,?,?,?)",(x,y,x,y,y))
@@ -30,22 +43,43 @@ cursor = connection.cursor()
 #cursor.execute("INSERT INTO foodandbev VALUES (3, 'silverware', 1, 'RiverGrill', 'null')")
 #cursor.execute("UPDATE foodandbev SET quantity = 5 WHERE item = 'patties'")
 #cursor.execute("INSERT INTO foodandbev VALUES (4, 'chips', 1, 'RiverGrill', 'null')")
-fbnames = cursor.execute("SELECT item FROM foodandbev").fetchall()
-r = cursor.execute("SELECT * FROM foodandbev").fetchall()
-
-
-item = "pattiez"
-check = False
-for i in fbnames:
-    if item == i[0]:
-        check = True
-        break
-
-if not check:
-    cursor.execute("INSERT OR IGNORE INTO foodandbev VALUES (?,?,?,?,?)",(1, item, 2, 'location', 'note'))
-else:
-    cursor.execute("UPDATE foodandbev SET quantity = ?, location = ?, note = ? WHERE item = ? ", (1, 'location', 'note', item))
-print (r)
+#cursor.execute("UPDATE foodandbev SET quantity = ?, location = ?, note = ? WHERE item = ? ", (1, 'location', 'note', 'patties'))
+#cursor.execute("INSERT OR IGNORE INTO foodandbev VALUES (?,?,?,?,?)",(4, 'item', 2, 'location', 'note'))
+# fbnames = cursor.execute("SELECT item FROM foodandbev").fetchall()
+# r = cursor.execute("SELECT * FROM it").fetchall()
+# 
+# x = 4
+# if x == 4:
+    # cursor.execute("INSERT OR IGNORE INTO foodandbev VALUES (?,?,?,?,?)",(0, '0', 0, '0', '0'))
+    # connection.commit()
+    # 
+# print(fbnames)
+# item = "pattiez"
+# check = False
+# for i in fbnames:
+    # print(i[0])
+    # if item == i[0]:
+        # check = True
+        # break
+# 
+# if check:
+# cursor.execute("INSERT OR IGNORE INTO it VALUES (?,?,?,?)",('item45', 50, 'location', 'note'))
+# connection.commit()
+# r = cursor.execute("SELECT * FROM it").fetchall()
+# w = cursor.execute("SELECT * FROM foodandbev").fetchall()
+# print(r)
+# print(w)
+# r = cursor.execute("SELECT * FROM foodandbev").fetchall()
+# print("hi")
+    # connection.commit()
+    # print("hi")
+# else:
+    # cursor.execute("UPDATE foodandbev SET quantity = ?, location = ?, note = ? WHERE item = ? ", (777, 'location', 'note', 'test2'))
+    # connection.commit()
+    # print("bye")
+# cursor.execute("UPDATE foodandbev SET quantity = ?, location = ?, note = ? WHERE item = ? ", (69, 'location', 'note', 'patties'))
+# connection.commit()
+# print (r)
 
 #
 #fb = cursor.execute("SELECT * FROM foodandbev").fetchall()
@@ -58,7 +92,7 @@ print (r)
 #else:
 #    print("bye")
 
-
+# print(r)
 
 
 def admin():
@@ -94,13 +128,107 @@ def index():
 def itadmin():
     if request.method == "GET":
         # display IT page
-        return render_template("itadmin.html")
+        it = cursor.execute("SELECT * FROM it").fetchall()
+        now = datetime. now()
+        return render_template("itadmin.html", it = it, now = now)
+    else:
+        #update database using the user inputs
+        now = datetime. now()
+        cursor.execute(("CREATE TABLE IF NOT EXISTS it (item TEXT, quantity INTEGER, location TEXT, note TEXT)"))
+
+        itnames = cursor.execute("SELECT item FROM it").fetchall()
+        itlocation = cursor.execute("SELECT location FROM it").fetchall()
+        itnameandplace = cursor.execute("SELECT item, location FROM it").fetchall()
+
+        
+        item = str(request.form.get("item")).upper()
+        quantity = str(request.form.get("quantity")).upper()
+        location = str(request.form.get("location")).upper()
+        note = str(request.form.get("note")).upper()
+
+        #if no item is inputted reuturn an error
+        if item == "":
+            rspns = "PLEASE INPUT AN ITEM"
+            return(rspns)
+
+        if quantity == "":
+            rspns = "PLEASE INPUT AN QUANTITY"
+            return(rspns)
+
+
+        #check if that item(with corresponding location) is already in the table
+        check = False
+        for i in itnameandplace:
+            if item == (i[0]) and location == (i[1]):
+                check = True
+                break
+
+        #if item is in the db aka "check == true" update that row, else add new item and it's row into db
+
+        if not check:
+            cursor.execute("INSERT OR IGNORE INTO it VALUES (?,?,?,?)",(item, quantity, location, note))
+            connection.commit()
+            # id = id + 1
+            it = cursor.execute("SELECT * FROM it").fetchall()
+            print (it)
+            
+        else:
+            cursor.execute("UPDATE it SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
+            connection.commit()
+            it = cursor.execute("SELECT * FROM it").fetchall()
+            print(it)
+            
+        return render_template("itadmin.html", it = it,  now = now)
 
 @app.route("/it",  methods=["GET", "POST"])
 def it():
     if request.method == "GET":
         # display IT page
-        return render_template("it.html")
+        now = datetime. now()
+        it = cursor.execute("SELECT * FROM it").fetchall()
+        return render_template("it.html", it = it, now = now)
+    else:
+
+        itnames = cursor.execute("SELECT item FROM it").fetchall()
+        itlocation = cursor.execute("SELECT location FROM it").fetchall()
+        itnameandplace = cursor.execute("SELECT item, location FROM it").fetchall()
+
+        now = datetime. now()
+
+        #update database using the user inputs
+        item = str(request.form.get("item")).upper()
+        quantity = str(request.form.get("quantity")).upper()
+        location = str(request.form.get("location")).upper()
+        note = str(request.form.get("note")).upper()
+
+        #if no item is inputted reuturn an error
+        if item == "":
+            rspns = "PLEASE INPUT AN ITEM"
+            return(rspns)
+
+        if quantity == "":
+            rspns = "PLEASE INPUT AN QUANTITY"
+            return(rspns)
+
+
+        #check if that item(with corresponding location) is already in the table
+        check = False
+        for i in itnameandplace:
+            if item == i[0] and location == i[1]:
+                check = True
+                break
+
+        if not check:
+            err = "ONLY ADMINS HAVE THIS PERMISSION. SIGN IN AS ADMIN TO ADD ITEMS TO DB"
+            return (err)
+            
+        else:
+            cursor.execute("UPDATE it SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
+            connection.commit()
+            it = cursor.execute("SELECT * FROM it").fetchall()
+            print(it)
+
+        return render_template("it.html",it = it, now = now)
 
 
 
@@ -143,67 +271,108 @@ def foodandbevadmin():
     if request.method == "GET":
         #display foodandbev page user version
         fb = cursor.execute("SELECT * FROM foodandbev").fetchall()
-        return render_template("fbadmin.html", fb = fb)
+        now = datetime. now()
+        return render_template("fbadmin.html", fb = fb, now = now)
     else:
         #update database using the user inputs
-        cursor.execute(("CREATE TABLE IF NOT EXISTS foodandbev (id INTEGER PRIMARY KEY AUTOINCREMENT, item TEXT, quantity INTEGER, location TEXT, note TEXT)"))
+        cursor.execute(("CREATE TABLE IF NOT EXISTS foodandbev (item TEXT, quantity INTEGER, location TEXT, note TEXT)"))
 
-        fb = cursor.execute("SELECT * FROM foodandbev").fetchall()
+        now = datetime. now()
+
+        # fb = cursor.execute("SELECT * FROM foodandbev").fetchall()
         fbnames = cursor.execute("SELECT item FROM foodandbev").fetchall()
+        fblocation = cursor.execute("SELECT location FROM foodandbev").fetchall()
+        fbnameandplace = cursor.execute("SELECT item, location FROM foodandbev").fetchall()
+
+        
+        item = str(request.form.get("item")).upper()
+        quantity = str(request.form.get("quantity")).upper()
+        location = str(request.form.get("location")).upper()
+        note = str(request.form.get("note")).upper()
+
+        #if no item is inputted reuturn an error
+        if item == "":
+            rspns = "PLEASE INPUT AN ITEM"
+            return(rspns)
+
+        if quantity == "":
+            rspns = "PLEASE INPUT AN QUANTITY"
+            return(rspns)
 
 
-        item = str(request.form.get("item"))
-        quantity = int(request.form.get("quantity"))
-        location = str(request.form.get("location"))
-        note = str(request.form.get("note"))
-        new_item = str(request.form.get("additem"))
-
-        #if new item is selected set the item variable to the value of "new item" to use in updating the database
-        if item == "newitem":
-            item = new_item
-
-
-        #check if that item is already in the table
+        #check if that item(with corresponding location) is already in the table
         check = False
-        for i in fbnames:
-            if item == fbnames[i]:
+        for i in fbnameandplace:
+            if item == i[0] and location == i[1]:
                 check = True
                 break
 
         #if item is in the db aka "check == true" update that row, else add new item and it's row into db
 
         if not check:
-            cursor.execute("INSERT INTO foodandbev VALUES (?,?,?,?,?)",(quantity, item, quantity, location, note))
+            cursor.execute("INSERT OR IGNORE INTO foodandbev VALUES (?,?,?,?)",(item, quantity, location, note))
             connection.commit()
-            #cursor.execute("INSERT INTO foodandbev VALUES (?,?,?,?,?)",(x,y,x,y,y))
+            # id = id + 1
+            fb = cursor.execute("SELECT * FROM foodandbev").fetchall()
             print (fb)
-            print (quantity)
-            print (item)
-            print (quantity)
-            print (location)
-            print (note)
+            
         else:
-            cursor.execute("UPDATE foodandbev SET quantity = ?, location = ?, note = ? WHERE item = ? ", (quantity, location, note, item))
+            cursor.execute("UPDATE foodandbev SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
             connection.commit()
+            fb = cursor.execute("SELECT * FROM foodandbev").fetchall()
+            print(fb)
+            
  
-        #make a check throgh the db table to see if that item already exists. If not, add it to the table along with its other information
-        # db.execute("UPDATE fbtable")
 
-        return render_template("fbadmin.html", fb = fb)
+        return render_template("fbadmin.html", fb = fb, now = now)
 
 @app.route("/foodandbev",  methods=["GET", "POST"])
 def foodandbev():
     if request.method == "GET":
         #display foodandbev page user version
-        return render_template("fb.html")
+        now = datetime. now()
+        fb = cursor.execute("SELECT * FROM foodandbev").fetchall()
+        return render_template("fb.html", fb = fb, now = now)
     else:
+
+        fbnames = cursor.execute("SELECT item FROM foodandbev").fetchall()
+        fblocation = cursor.execute("SELECT location FROM foodandbev").fetchall()
+        fbnameandplace = cursor.execute("SELECT item, location FROM foodandbev").fetchall()
+
+
+        now = datetime. now()
+
         #update database using the user inputs
-        item = (request.form.get("item"))
-        quantity = int(request.form.get("quantity"))
-        location = (request.form.get("location"))
-        note = (request.form.get("note"))
-        new_item = (request.form.get("additem"))
+        item = str(request.form.get("item")).upper()
+        quantity = str(request.form.get("quantity")).upper()
+        location = str(request.form.get("location")).upper()
+        note = str(request.form.get("note")).upper()
 
-        # db.execute("UPDATE fbtable")
+        #if no item is inputted reuturn an error
+        if item == "":
+            rspns = "PLEASE INPUT AN ITEM"
+            return(rspns)
 
-        return render_template("fb.html" )
+        if quantity == "":
+            rspns = "PLEASE INPUT AN QUANTITY"
+            return(rspns)
+
+
+        #check if that item(with corresponding location) is already in the table
+        check = False
+        for i in fbnameandplace:
+            if item == i[0] and location == i[1]:
+                check = True
+                break
+
+        if not check:
+            err = "ONLY ADMINS HAVE THIS PERMISSION. SIGN IN AS ADMIN TO ADD ITEMS TO DB"
+            return (err)
+            
+        else:
+            cursor.execute("UPDATE foodandbev SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
+            connection.commit()
+            fb = cursor.execute("SELECT * FROM foodandbev").fetchall()
+            print(fb)
+
+        return render_template("fb.html", fb = fb, now = now)
