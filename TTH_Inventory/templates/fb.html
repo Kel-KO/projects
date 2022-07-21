@@ -9,7 +9,7 @@
 
     <style>
         body{
-            background-color: rgb(255, 255, 255);
+            background-color: rgb(240, 84, 84);
         }
         .header{
             width: 100%;
@@ -172,44 +172,51 @@
             font-size: 27px;
             transition-duration: .2s;
         }
+        .p{
+            font-size: 10px;
+            position: absolute;
+            top: 100px;
+            left: 100px;
+        }
     </style>
 </head>
 <body>
-    <!-- <form action="/foodandbev" method="get"> -->
     <div class="header">
         <image class="img" height="80%" width="12%" src="{{url_for('static',filename = 'tt_logo2.jpg')}}" style="z-index: 650px">
         <h1 class="headertxt">Food & Bev</h1>
         <button onclick="window.location='http://127.0.0.1:7000/';" class="b2">Back To Main</button>
+        <p class="p">(user)</p>
     </div>
     <h1 style="color: black;">Last Updated 00:00:00:00 d/m</h1>
+
     <div>
-    <!-- </form>  -->
-    <!-- <form action="/foodandbev" method="post">    -->
-        <h1 style="color: black; position: absolute; top: 300px;">Last Updated 00:00:00:00 d/m</h1>
+    <form action="/foodandbev" method="post">
+        <h1 style="color: black; position: absolute; top: 300px;">Last Updated:{{now}}</h1>
         <p style="color: black; position: absolute; top: 350px;">please fill in every input </p>
-        <select class="drop" name= "item" id="item" style="left: 40%; top:400px" >
-            <option value="buns">buns</option>
-            <option value="patties">patties</option>
-            <option value="silverware">silverware</option>
-            <option value="chips">chips</option>
-            <option value="cookies">cookies</option>
-        </select>
+        <!-- <input class="amnt" type="text" name="additem" id="additem" placeholder="add item" style="left: 40%; top:350px"> -->
+        <input class="amnt" type="text" name="item" id="item" placeholder="search item" style="left: 40%; top:400px">
+        <!-- <select class="drop" name= "item" id="item" style="left: 40%; top:400px" >
+            <option value="newitem">add item</option>
+            <option value="searchitem">search item</option>
+        </select> -->
         <input class="amnt" style="left: 50%; top: 400px; " name="quantity" id="quantity" placeholder="quantity" type="number" step="any">
         <select class="drop" name="location" id="location" style="left: 60%; top:400px" >
-            <option value="buns">RiverGrill</option>
-            <option value="patties">Smokehouse</option>
-            <option value="silverware">Ray's Pizza</option>
-            <option value="chips">JP's Dogs</option>
-            <option value="cookies">Pretzel</option>
-            <option value="chips">DippinDots</option>
-            <option value="cookies">BahamaBucks</option>
+            <option value="TTBar">TT Bar</option>
+            <option value="MainStBar">MainSt Bar</option>
+            <option value="RiverGrill">RiverGrill</option>
+            <option value="Smokehouse">Smokehouse</option>
+            <option value="Ray's Pizza">Ray's Pizza</option>
+            <option value="JP's Dogs">JP's Dogs</option>
+            <option value="Pretzel">Pretzel</option>
+            <option value="DippinDots">DippinDots</option>
+            <option value="BahamaBucks">BahamaBucks</option>
         </select>
         <input class="note" style="left: 75%; top: 400px; " name="note" id="note" placeholder="note">
-        <button class="sbmt" type="submit" style="left: 30%; top: 400px;">Confirm</button>
+        <button class="sbmt" type="submit" style="left: 30%; top: 400px;">Update</button>
+
         <table style="width:100%">
             <thead>
                 <tr>
-                  <th scope="col">ID</th>
                   <th scope="col">ITEM</th>
                   <th scope="col">QUANTITY</th>
                   <th scope="col">LOCATION</th>
@@ -217,16 +224,17 @@
                 </tr>
             </thead>
             <tbody>
+                {% for item in fb %}
                 <tr>
-                    <td scope="col">1</th>
-                    <td scope="col">buns</th>
-                    <td scope="col">734</th>
-                    <td scope="col">Rivergrill</th>
-                    <td scope="col">all still fresh and ready</th>
-                  </tr>
+                    <td style="color: black;" scope="col">{{item[0]}}</td>
+                    <td style="color: black;" scope="col">{{item[1]}}</td>
+                    <td style="color: black;" scope="col">{{item[2]}}</td>
+                    <td style="color: black;" scope="col">{{item[3]}}</td>
+                </tr>
+                {% endfor %}
             </tbody>  
         </table>
+    </form>
     </div>
-    <!-- </form> -->
 </body>
 </html>
