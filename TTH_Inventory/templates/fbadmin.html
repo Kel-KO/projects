@@ -9,7 +9,7 @@
 
     <style>
         body{
-            background-color: rgb(255, 255, 255);
+            background-color: rgb(240, 84, 84);
         }
         .header{
             width: 100%;
@@ -191,19 +191,17 @@
 
     <div>
     <form action="/foodandbevadmin" method="post">
-        <h1 style="color: black; position: absolute; top: 300px;">Last Updated 00:00:00:00 d/m</h1>
+        <h1 style="color: black; position: absolute; top: 300px;">Last Updated:{{now}}</h1>
         <p style="color: black; position: absolute; top: 350px;">please fill in every input </p>
-        <input class="amnt" type="text" name="additem" id="additem" placeholder="add item" style="left: 40%; top:350px">
-        <select class="drop" name= "item" id="item" style="left: 40%; top:400px" >
-            <option value="newitem">new item</option>
-            <option value="buns">buns</option>
-            <option value="patties">patties</option>
-            <option value="silverware">silverware</option>
-            <option value="chips">chips</option>
-            <option value="cookies">cookies</option>
-        </select>
+        <!-- <input class="amnt" type="text" name="additem" id="additem" placeholder="add item" style="left: 40%; top:350px"> -->
+        <input class="amnt" type="text" name="item" id="item" placeholder="search item" style="left: 40%; top:400px">
+        <!-- <select class="drop" name= "item" id="item" style="left: 40%; top:400px" >
+            <option value="newitem">add item</option>
+            <option value="searchitem">search item</option>
+        </select> -->
         <input class="amnt" style="left: 50%; top: 400px; " name="quantity" id="quantity" placeholder="quantity" type="number" step="any">
         <select class="drop" name="location" id="location" style="left: 60%; top:400px" >
+
             <option value="RiverGrill">RiverGrill</option>
             <option value="Smokehouse">Smokehouse</option>
             <option value="Ray's Pizza">Ray's Pizza</option>
@@ -213,13 +211,11 @@
             <option value="BahamaBucks">BahamaBucks</option>
         </select>
         <input class="note" style="left: 75%; top: 400px; " name="note" id="note" placeholder="note">
-        <button class="sbmt" type="submit" style="left: 30%; top: 400px;">Confirm</button>
-
+        <button class="sbmt" type="submit" style="left: 30%; top: 400px;">Update</button>
 
         <table style="width:100%">
             <thead>
                 <tr>
-                  <th scope="col">ID</th>
                   <th scope="col">ITEM</th>
                   <th scope="col">QUANTITY</th>
                   <th scope="col">LOCATION</th>
@@ -229,11 +225,10 @@
             <tbody>
                 {% for item in fb %}
                 <tr>
-                    <td style="color: black;" scope="col">{{item['id']}}</td>
-                    <td style="color: black;" scope="col">{{item['item']}}</td>
-                    <td style="color: black;" scope="col">{{item['quantity']}}</td>
-                    <td style="color: black;" scope="col">{{item['location']}}</td>
-                    <td style="color: black;" scope="col">{{item['note']}}</td>
+                    <td style="color: black;" scope="col">{{item[0]}}</td>
+                    <td style="color: black;" scope="col">{{item[1]}}</td>
+                    <td style="color: black;" scope="col">{{item[2]}}</td>
+                    <td style="color: black;" scope="col">{{item[3]}}</td>
                 </tr>
                 {% endfor %}
             </tbody>  
