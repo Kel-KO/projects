@@ -28,10 +28,12 @@ cursor = connection.cursor()
 #cursor.execute("DROP TABLE it")
 #cursor.execute("DROP TABLE retail")
 #cursor.execute("DROP TABLE admissions")
+#cursor.execute("DROP TABLE operations")
 #cursor.execute("CREATE TABLE foodandbev (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
 #cursor.execute("CREATE TABLE it (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
 #cursor.execute("CREATE TABLE retail (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
 #cursor.execute("CREATE TABLE admissions (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
+#cursor.execute("CREATE TABLE operations (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
 #---------------------------------------------------------------------------------------------------------
 
 
@@ -569,3 +571,113 @@ def foodandbev():
             print(fb)
 
         return render_template("fb.html", fb = fb, now = now)
+
+
+
+
+
+@app.route("/operationsadmin",  methods=["GET", "POST"])
+def operationsadmin():
+    if request.method == "GET":
+        # display operations page
+        ops = cursor.execute("SELECT * FROM operations").fetchall()
+        now = datetime. now()
+        return render_template("opsadmin.html", ops = ops, now = now)
+    else:
+        #update database using the user inputs
+        now = datetime. now()
+        cursor.execute(("CREATE TABLE IF NOT EXISTS operations (item TEXT, quantity INTEGER, location TEXT, note TEXT)"))
+
+        opsnames = cursor.execute("SELECT item FROM operations").fetchall()
+        opslocation = cursor.execute("SELECT location FROM operations").fetchall()
+        opsnameandplace = cursor.execute("SELECT item, location FROM operations").fetchall()
+
+        
+        item = str(request.form.get("item")).upper()
+        quantity = str(request.form.get("quantity")).upper()
+        location = str(request.form.get("location")).upper()
+        note = str(request.form.get("note")).upper()
+
+        #if no item is inputted reuturn an error
+        if item == "":
+            rspns = "PLEASE INPUT AN ITEM"
+            return(rspns)
+
+        if quantity == "":
+            rspns = "PLEASE INPUT AN QUANTITY"
+            return(rspns)
+
+
+        #check if that item(with corresponding location) is already in the table
+        check = False
+        for i in opsnameandplace:
+            if item == (i[0]) and location == (i[1]):
+                check = True
+                break
+
+        #if item is in the db aka "check == true" update that row, else add new item and it's row into db
+
+        if not check:
+            cursor.execute("INSERT OR IGNORE INTO operations VALUES (?,?,?,?)",(item, quantity, location, note))
+            connection.commit()
+            # id = id + 1
+            ops = cursor.execute("SELECT * FROM operations").fetchall()
+            print (ops)
+            
+        else:
+            cursor.execute("UPDATE operations SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
+            connection.commit()
+            ops = cursor.execute("SELECT * FROM operations").fetchall()
+            print(ops)
+            
+        return render_template("opsadmin.html", ops = ops,  now = now)
+
+
+@app.route("/operations",  methods=["GET", "POST"])
+def operations():
+    if request.method == "GET":
+        # display retail page
+        now = datetime. now()
+        ops = cursor.execute("SELECT * FROM operations").fetchall()
+        return render_template("ops.html", ops = ops, now = now)
+    else:
+        opsnames = cursor.execute("SELECT item FROM operations").fetchall()
+        opslocation = cursor.execute("SELECT location FROM operations").fetchall()
+        opsnameandplace = cursor.execute("SELECT item, location FROM operations").fetchall()
+
+        now = datetime. now()
+
+        #update database using the user inputs
+        item = str(request.form.get("item")).upper()
+        quantity = str(request.form.get("quantity")).upper()
+        location = str(request.form.get("location")).upper()
+        note = str(request.form.get("note")).upper()
+
+        #if no item is inputted reuturn an error
+        if item == "":
+            rspns = "PLEASE INPUT AN ITEM"
+            return(rspns)
+
+        if quantity == "":
+            rspns = "PLEASE INPUT AN QUANTITY"
+            return(rspns)
+
+
+        #check if that item(with corresponding location) is already in the table
+        check = False
+        for i in opsnameandplace:
+            if item == i[0] and location == i[1]:
+                check = True
+                break
+
+        if not check:
+            err = "ONLY ADMINS HAVE THIS PERMISSION. SIGN IN AS ADMIN TO ADD ITEMS TO DB"
+            return (err)
+            
+        else:
+            cursor.execute("UPDATE operations SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
+            connection.commit()
+            ops = cursor.execute("SELECT * FROM operations").fetchall()
+            print(ops)
+
+        return render_template("ops.html", ops = ops, now = now)
