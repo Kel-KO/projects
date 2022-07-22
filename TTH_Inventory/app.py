@@ -23,11 +23,15 @@ cursor = connection.cursor()
 #------------database test connections
 
 
-# -------------------------------(empty and recreate table queries)---------------------------------------
-# cursor.execute("DROP TABLE foodandbev")
-# cursor.execute("DROP TABLE it")
-# cursor.execute("CREATE TABLE foodandbev (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
-# cursor.execute("CREATE TABLE it (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
+# -------------------------------(empty and recreate inv.db tables)---------------------------------------
+#cursor.execute("DROP TABLE foodandbev")
+#cursor.execute("DROP TABLE it")
+#cursor.execute("DROP TABLE retail")
+#cursor.execute("DROP TABLE admissions")
+#cursor.execute("CREATE TABLE foodandbev (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
+#cursor.execute("CREATE TABLE it (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
+#cursor.execute("CREATE TABLE retail (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
+#cursor.execute("CREATE TABLE admissions (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
 #---------------------------------------------------------------------------------------------------------
 
 
@@ -237,13 +241,107 @@ def it():
 def retailadmin():
     if request.method == "GET":
         # display retail page
-        return render_template("rtadmin.html")
+        rt = cursor.execute("SELECT * FROM retail").fetchall()
+        now = datetime. now()
+        return render_template("rtadmin.html", rt = rt, now = now)
+    else:
+        #update database using the user inputs
+        now = datetime. now()
+        cursor.execute(("CREATE TABLE IF NOT EXISTS retail (item TEXT, quantity INTEGER, location TEXT, note TEXT)"))
+
+        rtnames = cursor.execute("SELECT item FROM retail").fetchall()
+        rtlocation = cursor.execute("SELECT location FROM retail").fetchall()
+        rtnameandplace = cursor.execute("SELECT item, location FROM retail").fetchall()
+
+        
+        item = str(request.form.get("item")).upper()
+        quantity = str(request.form.get("quantity")).upper()
+        location = str(request.form.get("location")).upper()
+        note = str(request.form.get("note")).upper()
+
+        #if no item is inputted reuturn an error
+        if item == "":
+            rspns = "PLEASE INPUT AN ITEM"
+            return(rspns)
+
+        if quantity == "":
+            rspns = "PLEASE INPUT AN QUANTITY"
+            return(rspns)
+
+
+        #check if that item(with corresponding location) is already in the table
+        check = False
+        for i in rtnameandplace:
+            if item == (i[0]) and location == (i[1]):
+                check = True
+                break
+
+        #if item is in the db aka "check == true" update that row, else add new item and it's row into db
+
+        if not check:
+            cursor.execute("INSERT OR IGNORE INTO retail VALUES (?,?,?,?)",(item, quantity, location, note))
+            connection.commit()
+            # id = id + 1
+            rt = cursor.execute("SELECT * FROM retail").fetchall()
+            print (rt)
+            
+        else:
+            cursor.execute("UPDATE retail SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
+            connection.commit()
+            rt = cursor.execute("SELECT * FROM retail").fetchall()
+            print(rt)
+            
+        return render_template("rtadmin.html", rt = rt,  now = now)
+
 
 @app.route("/retail",  methods=["GET", "POST"])
 def retail():
     if request.method == "GET":
         # display retail page
-        return render_template("rt.html")
+        now = datetime. now()
+        rt = cursor.execute("SELECT * FROM retail").fetchall()
+        return render_template("rt.html", rt = rt, now = now)
+    else:
+        rtnames = cursor.execute("SELECT item FROM retail").fetchall()
+        rtlocation = cursor.execute("SELECT location FROM retail").fetchall()
+        rtnameandplace = cursor.execute("SELECT item, location FROM retail").fetchall()
+
+        now = datetime. now()
+
+        #update database using the user inputs
+        item = str(request.form.get("item")).upper()
+        quantity = str(request.form.get("quantity")).upper()
+        location = str(request.form.get("location")).upper()
+        note = str(request.form.get("note")).upper()
+
+        #if no item is inputted reuturn an error
+        if item == "":
+            rspns = "PLEASE INPUT AN ITEM"
+            return(rspns)
+
+        if quantity == "":
+            rspns = "PLEASE INPUT AN QUANTITY"
+            return(rspns)
+
+
+        #check if that item(with corresponding location) is already in the table
+        check = False
+        for i in rtnameandplace:
+            if item == i[0] and location == i[1]:
+                check = True
+                break
+
+        if not check:
+            err = "ONLY ADMINS HAVE THIS PERMISSION. SIGN IN AS ADMIN TO ADD ITEMS TO DB"
+            return (err)
+            
+        else:
+            cursor.execute("UPDATE retail SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
+            connection.commit()
+            rt = cursor.execute("SELECT * FROM retail").fetchall()
+            print(rt)
+
+        return render_template("rt.html",rt = rt, now = now)
 
 
 
@@ -252,13 +350,108 @@ def retail():
 def admissionsadmin():
     if request.method == "GET":
         # display admissions page
-        return render_template("adadmin.html")
+        now = datetime. now()
+        ad = cursor.execute("SELECT * FROM admissions").fetchall()
+        return render_template("adadmin.html", ad = ad, now = now)
+
+    else:
+         #update database using the user inputs
+        now = datetime. now()
+        cursor.execute(("CREATE TABLE IF NOT EXISTS admissions (item TEXT, quantity INTEGER, location TEXT, note TEXT)"))
+
+        adnames = cursor.execute("SELECT item FROM admissions").fetchall()
+        adlocation = cursor.execute("SELECT location FROM admissions").fetchall()
+        adnameandplace = cursor.execute("SELECT item, location FROM admissions").fetchall()
+
+        
+        item = str(request.form.get("item")).upper()
+        quantity = str(request.form.get("quantity")).upper()
+        location = str(request.form.get("location")).upper()
+        note = str(request.form.get("note")).upper()
+
+        #if no item is inputted reuturn an error
+        if item == "":
+            rspns = "PLEASE INPUT AN ITEM"
+            return(rspns)
+
+        if quantity == "":
+            rspns = "PLEASE INPUT AN QUANTITY"
+            return(rspns)
+
+
+        #check if that item(with corresponding location) is already in the table
+        check = False
+        for i in adnameandplace:
+            if item == (i[0]) and location == (i[1]):
+                check = True
+                break
+
+        #if item is in the db aka "check == true" update that row, else add new item and it's row into db
+
+        if not check:
+            cursor.execute("INSERT OR IGNORE INTO admissions VALUES (?,?,?,?)",(item, quantity, location, note))
+            connection.commit()
+            # id = id + 1
+            ad = cursor.execute("SELECT * FROM admissions").fetchall()
+            print (ad)
+            
+        else:
+            cursor.execute("UPDATE admissions SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
+            connection.commit()
+            ad = cursor.execute("SELECT * FROM admissions").fetchall()
+            print(ad)
+            
+        return render_template("adadmin.html", ad = ad,  now = now)
 
 @app.route("/admissions",  methods=["GET", "POST"])
 def admissions():
     if request.method == "GET":
         # display admissions page
-        return render_template("ad.html")
+        now = datetime. now()
+        ad = cursor.execute("SELECT * FROM admissions").fetchall()
+        return render_template("ad.html", ad = ad, now = now)
+
+    else:
+        adnames = cursor.execute("SELECT item FROM admissions").fetchall()
+        adlocation = cursor.execute("SELECT location FROM admissions").fetchall()
+        adnameandplace = cursor.execute("SELECT item, location FROM admissions").fetchall()
+
+        now = datetime. now()
+
+        #update database using the user inputs
+        item = str(request.form.get("item")).upper()
+        quantity = str(request.form.get("quantity")).upper()
+        location = str(request.form.get("location")).upper()
+        note = str(request.form.get("note")).upper()
+
+        #if no item is inputted reuturn an error
+        if item == "":
+            rspns = "PLEASE INPUT AN ITEM"
+            return(rspns)
+
+        if quantity == "":
+            rspns = "PLEASE INPUT AN QUANTITY"
+            return(rspns)
+
+
+        #check if that item(with corresponding location) is already in the table
+        check = False
+        for i in adnameandplace:
+            if item == i[0] and location == i[1]:
+                check = True
+                break
+
+        if not check:
+            err = "ONLY ADMINS HAVE THIS PERMISSION. SIGN IN AS ADMIN TO ADD ITEMS TO DB"
+            return (err)
+            
+        else:
+            cursor.execute("UPDATE admissions SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
+            connection.commit()
+            ad = cursor.execute("SELECT * FROM admissions").fetchall()
+            print(ad)
+
+        return render_template("ad.html",ad = ad, now = now)
 
 
 
