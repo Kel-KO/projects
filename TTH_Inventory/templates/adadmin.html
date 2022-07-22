@@ -10,6 +10,11 @@
     <style>
         body{
             background-color: rgb(255, 255, 255);
+            background-size: 200%;
+            height: fit-content;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-image: url({{ url_for('static', filename='tt_image4.png') }});
         }
         .header{
             width: 100%;
@@ -19,17 +24,13 @@
             font-size: 20px;
             /* color: rgb(255, 255, 255); */
             font-family: Arial, Helvetica, sans-serif;
-            background-size: cover;
-            background-position: center;
-            background-repeat: none;
-            background-image: url({{ url_for('static', filename='liltth4.png') }});
             
         }
         .headertxt{
             position: absolute;
             width: 100%;
             top: 0px;
-            left: 170px;
+            left: 570px;
             color: rgb(255, 255, 255);
         }
         .h1{
@@ -65,7 +66,7 @@
             color: rgb(255, 255, 255);
             position: absolute;
             top: 30px;
-            left: 630px;
+            right: 50px;
             background-color: transparent;
             border: none;
             transition-duration: .2s;
@@ -173,7 +174,7 @@
             transition-duration: .2s;
         }
         .p{
-            font-size: 10px;
+            font-size: 40px;
             position: absolute;
             top: 100px;
             left: 100px;
@@ -181,58 +182,53 @@
     </style>
 </head>
 <body>
-    <!-- <form action="/foodandbev" method="get"> -->
     <div class="header">
-        <image class="img" height="80%" width="12%" src="{{url_for('static',filename = 'tt_logo2.jpg')}}" style="z-index: 650px">
-        <h1 class="headertxt">Admissions UNDER CONSTRUCTION</h1>
+        <image class="img" height="130%" width="22%" src="{{url_for('static',filename = 'tt_logo2.jpg')}}" style="z-index: 650px">        
+            <h1 class="headertxt">Admissions</h1>
         <button onclick="window.location='http://127.0.0.1:7000/';" class="b2">Back To Main</button>
-        <p class="p">(user)</p>
+        <p class="p">(admin)</p>
     </div>
-    <!-- <h1 style="color: black;">Last Updated 00:00:00:00 d/m</h1> -->
-    <!-- <div> -->
-    </form> 
-    <form action="/foodandbev" method="post">   
-        <!-- <h1 style="color: black; position: absolute; top: 300px;">Last Updated 00:00:00:00 d/m</h1> -->
-        <!-- <select class="drop" name= "item" id="item" style="left: 40%; top:400px" > -->
-            <!-- <option value="buns">buns</option> -->
-            <!-- <option value="patties">patties</option> -->
-            <!-- <option value="silverware">silverware</option> -->
-            <!-- <option value="chips">chips</option> -->
-            <!-- <option value="cookies">cookies</option> -->
-        <!-- </select> -->
-        <!-- <input class="amnt" style="left: 50%; top: 400px; " name="quantity" id="quantity" placeholder="quantity" type="number" step="any"> -->
-        <!-- <select class="drop" name="location" id="location" style="left: 60%; top:400px" > -->
-            <!-- <option value="buns">RiverGrill</option> -->
-            <!-- <option value="patties">Smokehouse</option> -->
-            <!-- <option value="silverware">Ray's Pizza</option> -->
-            <!-- <option value="chips">JP Dogs</option> -->
-            <!-- <option value="cookies">Pretzel</option> -->
-            <!-- <option value="chips">DippinDots</option> -->
-            <!-- <option value="cookies">BahamaBucks</option> -->
-        <!-- </select> -->
-        <!-- <input class="note" style="left: 75%; top: 400px; " name="note" id="note" placeholder="note"> -->
-        <!-- <button class="sbmt" type="submit" style="left: 30%; top: 400px;">Confirm</button> -->
-        <!-- <table style="width:100%"> -->
-            <!-- <thead> -->
-                <!-- <tr> -->
-                  <!-- <th scope="col">ID</th> -->
-                  <!-- <th scope="col">ITEM</th> -->
-                  <!-- <th scope="col">QUANTITY</th> -->
-                  <!-- <th scope="col">LOCATION</th> -->
-                  <!-- <th scope="col">NOTE</th> -->
-                <!-- </tr> -->
-            <!-- </thead> -->
-            <!-- <tbody> -->
-                <!-- <tr> -->
-                    <!-- <td scope="col">1</th> -->
-                    <!-- <td scope="col">buns</th> -->
-                    <!-- <td scope="col">734</th> -->
-                    <!-- <td scope="col">Rivergrill</th> -->
-                    <!-- <td scope="col">all still fresh and ready</th> -->
-                  <!-- </tr> -->
-            <!-- </tbody>   -->
-        <!-- </table> -->
-    <!-- </div> -->
-    <!-- </form> -->
+
+    <div>
+    <form action="/admissionsadmin" method="post">
+        <h1 style="color: black; position: absolute; top: 300px;">Last Updated:{{now}}</h1>
+        <p style="color: black; position: absolute; top: 350px;">please fill in every input </p>
+        <!-- <input class="amnt" type="text" name="additem" id="additem" placeholder="add item" style="left: 40%; top:350px"> -->
+        <input class="amnt" type="text" name="item" id="item" placeholder="search item" style="left: 40%; top:400px">
+        <!-- <select class="drop" name= "item" id="item" style="left: 40%; top:400px" >
+            <option value="newitem">add item</option>
+            <option value="searchitem">search item</option>
+        </select> -->
+        <input class="amnt" style="left: 50%; top: 400px; " name="quantity" id="quantity" placeholder="quantity" type="number" step="any">
+        <select class="drop" name="location" id="location" style="left: 60%; top:400px" >
+            <option value="ADMIN1">ADMIN1</option>
+            <option value="ADMIN2">ADMIN2</option>
+            <option value="GuestRelations">Guest Relations</option>
+        </select>
+        <input class="note" style="left: 75%; top: 400px; " name="note" id="note" placeholder="note">
+        <button class="sbmt" type="submit" style="left: 30%; top: 400px;">Update</button>
+
+        <table style="width:100%">
+            <thead>
+                <tr>
+                  <th scope="col">ITEM</th>
+                  <th scope="col">QUANTITY</th>
+                  <th scope="col">LOCATION</th>
+                  <th scope="col">NOTE</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in ad %}
+                <tr>
+                    <td style="color: black;" scope="col">{{item[0]}}</td>
+                    <td style="color: black;" scope="col">{{item[1]}}</td>
+                    <td style="color: black;" scope="col">{{item[2]}}</td>
+                    <td style="color: black;" scope="col">{{item[3]}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>  
+        </table>
+    </form>
+    </div>
 </body>
 </html>
