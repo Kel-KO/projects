@@ -1,19 +1,37 @@
+from multiprocessing import connection
 import os
 import sqlite3
 from contextlib import closing
 from datetime import datetime
 
-with closing(sqlite3.connect("inv.db")) as connection:
-    with closing(connection.cursor()) as cursor:
-        rows = cursor.execute("SELECT 1").fetchall()
-        
-
-connection = sqlite3.connect("inv.db", check_same_thread=False)
+#with closing(sqlite3.connect("inv.db")) as connection:
+#    with closing(connection.cursor()) as cursor:
+#        rows = cursor.execute("SELECT 1").fetchall()
+#        
+#
+#connection = sqlite3.connect("inv.db", check_same_thread=False)
 from flask import Flask, flash, redirect, render_template, request, url_for
+import psycopg2
 from tempfile import mkdtemp
 
 # Configure application
 app = Flask(__name__)
+
+POSTGRESSQL_URI = "-"
+connection = psycopg2.connect(POSTGRESSQL_URI)
+
+try:
+    with connection: 
+        with connection.cursor() as cursor:
+            cursor.execute("CREATE TABLE foodandbev (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
+            cursor.execute("CREATE TABLE it (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
+            cursor.execute("CREATE TABLE retail (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
+            cursor.execute("CREATE TABLE admissions (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
+            cursor.execute("CREATE TABLE operations (Item TEXT, Quantity INTEGER, Location TEXT, Note TEXT)")
+except psycopg2.errors.DuplicateTable:
+    pass
+
+
 
 #cnx = MySQLConnection(user='naijaboyz123', database='KKOdb')
 #db = cnx.cursor(raw=True, buffered=True)
@@ -23,7 +41,7 @@ cursor = connection.cursor()
 #------------database test connections
 
 
-# -------------------------------(empty and recreate inv.db tables)---------------------------------------
+# -------------------------------SQLite(empty and recreate inv.db tables)---------------------------------------
 #cursor.execute("DROP TABLE foodandbev")
 #cursor.execute("DROP TABLE it")
 #cursor.execute("DROP TABLE retail")
@@ -104,9 +122,9 @@ cursor = connection.cursor()
 def admin():
     #require passphrase to acces admin or user mode
     x = 0
-    if (request.form.get("pass")) == "Typh00n2022":
+    if (request.form.get("pass")) == "-":
         x = 1
-    elif (request.form.get("pass")) == "Howdy123!":
+    elif (request.form.get("pass")) == "-":
         x = 2
     return x
 
@@ -134,17 +152,25 @@ def index():
 def itadmin():
     if request.method == "GET":
         # display IT page
-        it = cursor.execute("SELECT * FROM it").fetchall()
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM it")
+                it = cursor.fetchall()
         now = datetime. now()
         return render_template("itadmin.html", it = it, now = now)
     else:
         #update database using the user inputs
-        now = datetime. now()
-        cursor.execute(("CREATE TABLE IF NOT EXISTS it (item TEXT, quantity INTEGER, location TEXT, note TEXT)"))
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute(("CREATE TABLE IF NOT EXISTS it (item TEXT, quantity INTEGER, location TEXT, note TEXT)"))
 
-        itnames = cursor.execute("SELECT item FROM it").fetchall()
-        itlocation = cursor.execute("SELECT location FROM it").fetchall()
-        itnameandplace = cursor.execute("SELECT item, location FROM it").fetchall()
+                cursor.execute("SELECT item FROM it")
+                itnames = cursor.fetchall()
+                cursor.execute("SELECT location FROM it")
+                itlocation = cursor.fetchall()
+                cursor.execute("SELECT item, location FROM it")
+                itnameandplace = cursor.fetchall()
+        now = datetime. now()
 
         
         item = str(request.form.get("item")).upper()
@@ -172,16 +198,22 @@ def itadmin():
         #if item is in the db aka "check == true" update that row, else add new item and it's row into db
 
         if not check:
-            cursor.execute("INSERT OR IGNORE INTO it VALUES (?,?,?,?)",(item, quantity, location, note))
-            connection.commit()
-            # id = id + 1
-            it = cursor.execute("SELECT * FROM it").fetchall()
+            with connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("INSERT INTO it VALUES (%s,%s,%s,%s)",(item, quantity, location, note))
+                    connection.commit()
+                    # id = id + 1
+                    cursor.execute("SELECT * FROM it")
+                    it= cursor.fetchall()
             print (it)
             
         else:
-            cursor.execute("UPDATE it SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
-            connection.commit()
-            it = cursor.execute("SELECT * FROM it").fetchall()
+            with connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("UPDATE it SET quantity = %s, note = %s WHERE item = %s AND location = %s", (quantity, note, item, location))
+                    connection.commit()
+                    cursor.execute("SELECT * FROM it")
+                    it = cursor.fetchall()
             print(it)
             
         return render_template("itadmin.html", it = it,  now = now)
@@ -191,13 +223,21 @@ def it():
     if request.method == "GET":
         # display IT page
         now = datetime. now()
-        it = cursor.execute("SELECT * FROM it").fetchall()
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM it")
+                it = cursor.fetchall()
         return render_template("it.html", it = it, now = now)
     else:
 
-        itnames = cursor.execute("SELECT item FROM it").fetchall()
-        itlocation = cursor.execute("SELECT location FROM it").fetchall()
-        itnameandplace = cursor.execute("SELECT item, location FROM it").fetchall()
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT item FROM it")
+                itnames = cursor.fetchall()
+                cursor.execute("SELECT location FROM it")
+                itlocation= cursor.fetchall()
+                cursor.execute("SELECT item, location FROM it")
+                itnameandplace = cursor.fetchall()
 
         now = datetime. now()
 
@@ -229,9 +269,12 @@ def it():
             return (err)
             
         else:
-            cursor.execute("UPDATE it SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
-            connection.commit()
-            it = cursor.execute("SELECT * FROM it").fetchall()
+            with connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("UPDATE it SET quantity = %s, note = %s WHERE item =%s AND location = %s", (quantity, note, item, location))
+                    connection.commit()
+                    cursor.execute("SELECT * FROM it")
+                    it = cursor.fetchall()
             print(it)
 
         return render_template("it.html",it = it, now = now)
@@ -243,17 +286,27 @@ def it():
 def retailadmin():
     if request.method == "GET":
         # display retail page
-        rt = cursor.execute("SELECT * FROM retail").fetchall()
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM retail")
+                rt = cursor.fetchall()
         now = datetime. now()
         return render_template("rtadmin.html", rt = rt, now = now)
     else:
         #update database using the user inputs
         now = datetime. now()
-        cursor.execute(("CREATE TABLE IF NOT EXISTS retail (item TEXT, quantity INTEGER, location TEXT, note TEXT)"))
 
-        rtnames = cursor.execute("SELECT item FROM retail").fetchall()
-        rtlocation = cursor.execute("SELECT location FROM retail").fetchall()
-        rtnameandplace = cursor.execute("SELECT item, location FROM retail").fetchall()
+
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute(("CREATE TABLE IF NOT EXISTS retail (item TEXT, quantity INTEGER, location TEXT, note TEXT)"))
+
+                cursor.execute("SELECT item FROM retail")
+                rtnames = cursor.fetchall()
+                cursor.execute("SELECT location FROM retail")
+                rtlocation = cursor.fetchall()
+                cursor.execute("SELECT item, location FROM retail")
+                rtnameandplace = cursor.fetchall()
 
         
         item = str(request.form.get("item")).upper()
@@ -281,16 +334,22 @@ def retailadmin():
         #if item is in the db aka "check == true" update that row, else add new item and it's row into db
 
         if not check:
-            cursor.execute("INSERT OR IGNORE INTO retail VALUES (?,?,?,?)",(item, quantity, location, note))
-            connection.commit()
-            # id = id + 1
-            rt = cursor.execute("SELECT * FROM retail").fetchall()
+            with connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("INSERT INTO retail VALUES (%s,%s,%s,%s)",(item, quantity, location, note))
+                    connection.commit()
+                    # id = id + 1
+                    cursor.execute("SELECT * FROM retail")
+                    rt = cursor.fetchall()
             print (rt)
             
         else:
-            cursor.execute("UPDATE retail SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
-            connection.commit()
-            rt = cursor.execute("SELECT * FROM retail").fetchall()
+            with connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("UPDATE retail SET quantity = %s, note = %s WHERE item = %s AND location = %s", (quantity, note, item, location))
+                    connection.commit()
+                    cursor.execute("SELECT * FROM retail")
+                    rt = cursor.fetchall()
             print(rt)
             
         return render_template("rtadmin.html", rt = rt,  now = now)
@@ -301,12 +360,20 @@ def retail():
     if request.method == "GET":
         # display retail page
         now = datetime. now()
-        rt = cursor.execute("SELECT * FROM retail").fetchall()
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM retail")
+                rt = cursor.fetchall()
         return render_template("rt.html", rt = rt, now = now)
     else:
-        rtnames = cursor.execute("SELECT item FROM retail").fetchall()
-        rtlocation = cursor.execute("SELECT location FROM retail").fetchall()
-        rtnameandplace = cursor.execute("SELECT item, location FROM retail").fetchall()
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT item FROM retail")
+                rtnames = cursor.fetchall()
+                cursor.execute("SELECT location FROM retail")
+                rtlocation = cursor.fetchall()
+                cursor.execute("SELECT item, location FROM retail")
+                rtnameandplace = cursor.fetchall()
 
         now = datetime. now()
 
@@ -338,9 +405,12 @@ def retail():
             return (err)
             
         else:
-            cursor.execute("UPDATE retail SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
-            connection.commit()
-            rt = cursor.execute("SELECT * FROM retail").fetchall()
+            with connection:
+                with connection.cursor() as cursor:
+                        cursor.execute("UPDATE retail SET quantity = %s, note = %s WHERE item = %s AND location = %s", (quantity, note, item, location))
+                        connection.commit()
+                        cursor.execute("SELECT * FROM retail")
+                        rt = cursor.fetchall()
             print(rt)
 
         return render_template("rt.html",rt = rt, now = now)
@@ -353,17 +423,25 @@ def admissionsadmin():
     if request.method == "GET":
         # display admissions page
         now = datetime. now()
-        ad = cursor.execute("SELECT * FROM admissions").fetchall()
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM admissions")
+                ad = cursor.fetchall()
         return render_template("adadmin.html", ad = ad, now = now)
 
     else:
          #update database using the user inputs
         now = datetime. now()
-        cursor.execute(("CREATE TABLE IF NOT EXISTS admissions (item TEXT, quantity INTEGER, location TEXT, note TEXT)"))
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute(("CREATE TABLE IF NOT EXISTS admissions (item TEXT, quantity INTEGER, location TEXT, note TEXT)"))
 
-        adnames = cursor.execute("SELECT item FROM admissions").fetchall()
-        adlocation = cursor.execute("SELECT location FROM admissions").fetchall()
-        adnameandplace = cursor.execute("SELECT item, location FROM admissions").fetchall()
+                cursor.execute("SELECT item FROM admissions")
+                adnames = cursor.fetchall()
+                cursor.execute("SELECT location FROM admissions")
+                adlocation = cursor.fetchall()
+                cursor.execute("SELECT item, location FROM admissions")
+                adnameandplace = cursor.fetchall()
 
         
         item = str(request.form.get("item")).upper()
@@ -391,16 +469,22 @@ def admissionsadmin():
         #if item is in the db aka "check == true" update that row, else add new item and it's row into db
 
         if not check:
-            cursor.execute("INSERT OR IGNORE INTO admissions VALUES (?,?,?,?)",(item, quantity, location, note))
-            connection.commit()
-            # id = id + 1
-            ad = cursor.execute("SELECT * FROM admissions").fetchall()
+            with connection:
+                with connection.cursor() as cursor:        
+                    cursor.execute("INSERT INTO admissions VALUES (%s,%s,%s,%s)",(item, quantity, location, note))
+                    connection.commit()
+                    # id = id + 1
+                    cursor.execute("SELECT * FROM admissions")
+                    ad = cursor.fetchall()
             print (ad)
             
         else:
-            cursor.execute("UPDATE admissions SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
-            connection.commit()
-            ad = cursor.execute("SELECT * FROM admissions").fetchall()
+            with connection:
+                with connection.cursor() as cursor:        
+                    cursor.execute("UPDATE admissions SET quantity = %s, note = %s WHERE item = %s AND location = %s", (quantity, note, item, location))
+                    connection.commit()
+                    cursor.execute("SELECT * FROM admissions")
+                    ad = cursor.fetchall()
             print(ad)
             
         return render_template("adadmin.html", ad = ad,  now = now)
@@ -410,13 +494,21 @@ def admissions():
     if request.method == "GET":
         # display admissions page
         now = datetime. now()
-        ad = cursor.execute("SELECT * FROM admissions").fetchall()
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM admissions")
+                ad = cursor.fetchall()
         return render_template("ad.html", ad = ad, now = now)
 
     else:
-        adnames = cursor.execute("SELECT item FROM admissions").fetchall()
-        adlocation = cursor.execute("SELECT location FROM admissions").fetchall()
-        adnameandplace = cursor.execute("SELECT item, location FROM admissions").fetchall()
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT item FROM admissions")
+                adnames = cursor.fetchall()
+                cursor.execute("SELECT location FROM admissions")
+                adlocation = cursor.fetchall()
+                cursor.execute("SELECT item, location FROM admissions")
+                adnameandplace = cursor.fetchall()
 
         now = datetime. now()
 
@@ -448,9 +540,12 @@ def admissions():
             return (err)
             
         else:
-            cursor.execute("UPDATE admissions SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
-            connection.commit()
-            ad = cursor.execute("SELECT * FROM admissions").fetchall()
+            with connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("UPDATE admissions SET quantity = %s, note = %s WHERE item = %s AND location = %s", (quantity, note, item, location))
+                    connection.commit()
+                    cursor.execute("SELECT * FROM admissions")
+                    ad = cursor.fetchall()
             print(ad)
 
         return render_template("ad.html",ad = ad, now = now)
@@ -465,19 +560,26 @@ def admissions():
 def foodandbevadmin():
     if request.method == "GET":
         #display foodandbev page user version
-        fb = cursor.execute("SELECT * FROM foodandbev").fetchall()
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM foodandbev")
+                fb = cursor.fetchall()
         now = datetime. now()
         return render_template("fbadmin.html", fb = fb, now = now)
     else:
         #update database using the user inputs
-        cursor.execute(("CREATE TABLE IF NOT EXISTS foodandbev (item TEXT, quantity INTEGER, location TEXT, note TEXT)"))
-
         now = datetime. now()
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute(("CREATE TABLE IF NOT EXISTS foodandbev (item TEXT, quantity INTEGER, location TEXT, note TEXT)"))
 
-        # fb = cursor.execute("SELECT * FROM foodandbev").fetchall()
-        fbnames = cursor.execute("SELECT item FROM foodandbev").fetchall()
-        fblocation = cursor.execute("SELECT location FROM foodandbev").fetchall()
-        fbnameandplace = cursor.execute("SELECT item, location FROM foodandbev").fetchall()
+                # fb = cursor.execute("SELECT * FROM foodandbev").fetchall()
+                cursor.execute("SELECT item FROM foodandbev")
+                fbnames = cursor.fetchall()
+                cursor.execute("SELECT location FROM foodandbev")
+                fblocation = cursor.fetchall()
+                cursor.execute("SELECT item, location FROM foodandbev")
+                fbnameandplace = cursor.fetchall()
 
         
         item = str(request.form.get("item")).upper()
@@ -505,16 +607,22 @@ def foodandbevadmin():
         #if item is in the db aka "check == true" update that row, else add new item and it's row into db
 
         if not check:
-            cursor.execute("INSERT OR IGNORE INTO foodandbev VALUES (?,?,?,?)",(item, quantity, location, note))
-            connection.commit()
-            # id = id + 1
-            fb = cursor.execute("SELECT * FROM foodandbev").fetchall()
+            with connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("INSERT INTO foodandbev VALUES (%s,%s,%s,%s)",(item, quantity, location, note))
+                    connection.commit()
+                    # id = id + 1
+                    cursor.execute("SELECT * FROM foodandbev")
+                    fb = cursor.fetchall()
             print (fb)
             
         else:
-            cursor.execute("UPDATE foodandbev SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
-            connection.commit()
-            fb = cursor.execute("SELECT * FROM foodandbev").fetchall()
+            with connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("UPDATE foodandbev SET quantity =%s, note = %s WHERE item = %s AND location = %s", (quantity, note, item, location))
+                    connection.commit()
+                    cursor.execute("SELECT * FROM foodandbev")
+                    fb = cursor.fetchall()
             print(fb)
             
  
@@ -526,13 +634,20 @@ def foodandbev():
     if request.method == "GET":
         #display foodandbev page user version
         now = datetime. now()
-        fb = cursor.execute("SELECT * FROM foodandbev").fetchall()
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM foodandbev")
+                fb = cursor.fetchall()
         return render_template("fb.html", fb = fb, now = now)
     else:
-
-        fbnames = cursor.execute("SELECT item FROM foodandbev").fetchall()
-        fblocation = cursor.execute("SELECT location FROM foodandbev").fetchall()
-        fbnameandplace = cursor.execute("SELECT item, location FROM foodandbev").fetchall()
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT item FROM foodandbev")
+                fbnames = cursor.fetchall()
+                cursor.execute("SELECT location FROM foodandbev")
+                fblocation = cursor.fetchall()
+                cursor.execute("SELECT item, location FROM foodandbev")
+                fbnameandplace = cursor.fetchall()
 
 
         now = datetime. now()
@@ -565,9 +680,12 @@ def foodandbev():
             return (err)
             
         else:
-            cursor.execute("UPDATE foodandbev SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
-            connection.commit()
-            fb = cursor.execute("SELECT * FROM foodandbev").fetchall()
+            with connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("UPDATE foodandbev SET quantity = %s, note = %s WHERE item = %s AND location = %s", (quantity, note, item, location))
+                    connection.commit()
+                    cursor.execute("SELECT * FROM foodandbev")
+                    fb = cursor.fetchall()
             print(fb)
 
         return render_template("fb.html", fb = fb, now = now)
@@ -580,17 +698,25 @@ def foodandbev():
 def operationsadmin():
     if request.method == "GET":
         # display operations page
-        ops = cursor.execute("SELECT * FROM operations").fetchall()
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM operations")
+                ops = cursor.fetchall()
         now = datetime. now()
         return render_template("opsadmin.html", ops = ops, now = now)
     else:
         #update database using the user inputs
         now = datetime. now()
-        cursor.execute(("CREATE TABLE IF NOT EXISTS operations (item TEXT, quantity INTEGER, location TEXT, note TEXT)"))
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute(("CREATE TABLE IF NOT EXISTS operations (item TEXT, quantity INTEGER, location TEXT, note TEXT)"))
 
-        opsnames = cursor.execute("SELECT item FROM operations").fetchall()
-        opslocation = cursor.execute("SELECT location FROM operations").fetchall()
-        opsnameandplace = cursor.execute("SELECT item, location FROM operations").fetchall()
+                cursor.execute("SELECT item FROM operations")
+                opsnames = cursor.fetchall()
+                cursor.execute("SELECT location FROM operations")
+                opslocation = cursor.fetchall()
+                cursor.execute("SELECT item, location FROM operations")
+                opsnameandplace = cursor.fetchall()
 
         
         item = str(request.form.get("item")).upper()
@@ -618,16 +744,22 @@ def operationsadmin():
         #if item is in the db aka "check == true" update that row, else add new item and it's row into db
 
         if not check:
-            cursor.execute("INSERT OR IGNORE INTO operations VALUES (?,?,?,?)",(item, quantity, location, note))
-            connection.commit()
-            # id = id + 1
-            ops = cursor.execute("SELECT * FROM operations").fetchall()
+            with connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("INSERT INTO operations VALUES (%s,%s,%s,%s)",(item, quantity, location, note))
+                    connection.commit()
+                    # id = id + 1
+                    cursor.execute("SELECT * FROM operations")
+                    ops = cursor.fetchall()
             print (ops)
             
         else:
-            cursor.execute("UPDATE operations SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
-            connection.commit()
-            ops = cursor.execute("SELECT * FROM operations").fetchall()
+            with connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("UPDATE operations SET quantity = %s, note = %s WHERE item = %s AND location = %s", (quantity, note, item, location))
+                    connection.commit()
+                    cursor.execute("SELECT * FROM operations")
+                    ops = cursor.fetchall()
             print(ops)
             
         return render_template("opsadmin.html", ops = ops,  now = now)
@@ -638,12 +770,20 @@ def operations():
     if request.method == "GET":
         # display retail page
         now = datetime. now()
-        ops = cursor.execute("SELECT * FROM operations").fetchall()
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM operations")
+                ops = cursor.fetchall()
         return render_template("ops.html", ops = ops, now = now)
     else:
-        opsnames = cursor.execute("SELECT item FROM operations").fetchall()
-        opslocation = cursor.execute("SELECT location FROM operations").fetchall()
-        opsnameandplace = cursor.execute("SELECT item, location FROM operations").fetchall()
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT item FROM operations")
+                opsnames = cursor.fetchall()
+                cursor.execute("SELECT location FROM operations")
+                opslocation = cursor.fetchall()
+                cursor.execute("SELECT item, location FROM operations")
+                opsnameandplace = cursor.fetchall()
 
         now = datetime. now()
 
@@ -675,9 +815,12 @@ def operations():
             return (err)
             
         else:
-            cursor.execute("UPDATE operations SET quantity = ?, note = ? WHERE item = ? AND location = ?", (quantity, note, item, location))
-            connection.commit()
-            ops = cursor.execute("SELECT * FROM operations").fetchall()
+            with connection:
+                with connection.cursor() as cursor:
+                    cursor.execute("UPDATE operations SET quantity = %s, note = %s WHERE item = %s AND location = %s", (quantity, note, item, location))
+                    connection.commit()
+                    cursor.execute("SELECT * FROM operations")
+                    ops = cursor.fetchall()
             print(ops)
 
         return render_template("ops.html", ops = ops, now = now)
